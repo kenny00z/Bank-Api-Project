@@ -1,7 +1,7 @@
-package com.ironhack.finalProject.model.account;
+package com.ironhack.finalProject.model.accounts;
 
 import com.ironhack.finalProject.enums.Status;
-import com.ironhack.finalProject.model.user.AccountHolders;
+import com.ironhack.finalProject.model.users.AccountHolders;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,9 +11,8 @@ import java.time.LocalDate;
 @Entity
 
 public class Checking extends Account{
-
-    private BigDecimal minimumBalance;
-    private BigDecimal monthlyMaintenanceFee;
+    private BigDecimal minimumBalance = new BigDecimal("250");
+    private BigDecimal monthlyMaintenanceFee = new BigDecimal("12");
 
     private LocalDate creationDate;
     @Enumerated(EnumType.STRING)

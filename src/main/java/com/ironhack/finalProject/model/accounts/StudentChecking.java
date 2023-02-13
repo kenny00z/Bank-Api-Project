@@ -1,7 +1,7 @@
-package com.ironhack.finalProject.model.account;
+package com.ironhack.finalProject.model.accounts;
 
 import com.ironhack.finalProject.enums.Status;
-import com.ironhack.finalProject.model.user.AccountHolders;
+import com.ironhack.finalProject.model.users.AccountHolders;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

@@ -1,4 +1,4 @@
-package com.ironhack.finalProject.model.user;
+package com.ironhack.finalProject.model.users;
 
 import jakarta.persistence.*;
 

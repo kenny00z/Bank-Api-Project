@@ -1,6 +1,6 @@
-package com.ironhack.finalProject.model.account;
+package com.ironhack.finalProject.model.accounts;
 
-import com.ironhack.finalProject.model.user.AccountHolders;
+import com.ironhack.finalProject.model.users.AccountHolders;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
