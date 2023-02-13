@@ -5,11 +5,14 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
+@Entity
 public class AccountHolders extends User{
     private LocalDate birthDate;
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "address")
     private Address address;
+    @ManyToOne
+    @JoinColumn(name = "mailing_address_id")
     private Address mailingAddress;
 
     public AccountHolders() {
