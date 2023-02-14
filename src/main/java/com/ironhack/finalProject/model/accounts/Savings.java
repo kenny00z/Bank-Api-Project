@@ -2,7 +2,6 @@ package com.ironhack.finalProject.model.accounts;
 
 import com.ironhack.finalProject.enums.Status;
 import com.ironhack.finalProject.model.users.AccountHolder;
-import com.ironhack.finalProject.model.utils.Money;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,27 +14,27 @@ import java.time.LocalDate;
 
 @Entity
 
-public class Saving extends Account{
+public class Savings extends Account{
     @DecimalMin(value = "100", inclusive = true)
     @DecimalMax(value = "1000", inclusive = true)
-    private BigDecimal minimumBalance = new BigDecimal(1000);
+    private BigDecimal minimumBalance;
     @DecimalMax(value = "0.5", inclusive = true)
-    private BigDecimal interestRate = new BigDecimal(0.0025).setScale(4, RoundingMode.HALF_EVEN);
-    private LocalDate creationDate;
+    private BigDecimal interestRate;
+    private final LocalDate creationDate = LocalDate.now();
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public Saving() {
+    public Savings() {
     }
 
-    public Saving(Money balance, int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee, BigDecimal minimumBalance, BigDecimal interestRate, LocalDate creationDate, Status status) {
-        super(balance, secretKey, primaryOwner, secondaryOwner, penaltyFee);
-        this.minimumBalance = minimumBalance;
-        this.interestRate = interestRate;
-        this.creationDate = creationDate;
+    public Savings(int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Status status) {
+        super(secretKey, primaryOwner, secondaryOwner);
+        this.minimumBalance =  new BigDecimal(1000);
+        this.interestRate = new BigDecimal(0.0025).setScale(4, RoundingMode.HALF_EVEN);
         this.status = status;
     }
+
 
     public BigDecimal getMinimumBalance() {
         return minimumBalance;
@@ -48,17 +47,8 @@ public class Saving extends Account{
     public BigDecimal getInterestRate() {
         return interestRate;
     }
-
-    public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
-    }
-
     public LocalDate getCreationDate() {
         return creationDate;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
     }
 
     public Status getStatus() {

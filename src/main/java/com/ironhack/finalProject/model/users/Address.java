@@ -2,7 +2,8 @@ package com.ironhack.finalProject.model.users;
 
 import jakarta.persistence.*;
 
-@Embeddable
+@Entity
+//@Embeddable
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

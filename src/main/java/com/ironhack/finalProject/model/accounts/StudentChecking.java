@@ -11,28 +11,25 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-
 public class StudentChecking extends Account{
 
-    private LocalDate creationDate;
+    private final LocalDate creationDate = LocalDate.now();
     @Enumerated(EnumType.STRING)
     private Status status;
 
     public StudentChecking() {
     }
 
-    public StudentChecking(Money balance, int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee, LocalDate creationDate, Status status) {
-        super(balance, secretKey, primaryOwner, secondaryOwner, penaltyFee);
-        this.creationDate = creationDate;
+    public StudentChecking(int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Status status) {
+        super(secretKey, primaryOwner, secondaryOwner);
         this.status = status;
+    }
+
+    public StudentChecking(AccountHolder primaryOwner, AccountHolder secondaryOwner, int secretKey) {
     }
 
     public LocalDate getCreationDate() {
         return creationDate;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
     }
 
     public Status getStatus() {

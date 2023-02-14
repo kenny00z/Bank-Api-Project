@@ -10,50 +10,37 @@ import jakarta.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 @Entity
-
 public class Checking extends Account{
-    private BigDecimal minimumBalance = new BigDecimal(250);
-    private BigDecimal monthlyMaintenanceFee = new BigDecimal(12);
+    private final BigDecimal minimumBalance = new BigDecimal(250);
+    private BigDecimal monthlyMaintenanceFee;
 
-    private LocalDate creationDate;
+    private final LocalDate creationDate = LocalDate.now();
     @Enumerated(EnumType.STRING)
     private Status status;
 
     public Checking() {
     }
 
-    public Checking(Money balance, int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee, BigDecimal minimumBalance, BigDecimal monthlyMaintenanceFee, LocalDate creationDate, Status status) {
-        super(balance, secretKey, primaryOwner, secondaryOwner, penaltyFee);
-        this.minimumBalance = minimumBalance;
-        this.monthlyMaintenanceFee = monthlyMaintenanceFee;
-        this.creationDate = creationDate;
+    public Checking(int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Status status) {
+        super(secretKey, primaryOwner, secondaryOwner);
+        this.monthlyMaintenanceFee =  new BigDecimal(12);
         this.status = status;
     }
 
+    public Checking(AccountHolder primaryOwner, AccountHolder secondaryOwner, int secretKey) {
+    }
 
 
     public BigDecimal getMinimumBalance() {
         return minimumBalance;
     }
 
-    public void setMinimumBalance(BigDecimal minimumBalance) {
-        this.minimumBalance = minimumBalance;
-    }
-
     public BigDecimal getMonthlyMaintenanceFee() {
         return monthlyMaintenanceFee;
     }
 
-    public void setMonthlyMaintenanceFee(BigDecimal monthlyMaintenanceFee) {
-        this.monthlyMaintenanceFee = monthlyMaintenanceFee;
-    }
-
     public LocalDate getCreationDate() {
         return creationDate;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
     }
 
     public Status getStatus() {

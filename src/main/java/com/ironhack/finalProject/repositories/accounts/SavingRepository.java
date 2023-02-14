@@ -1,7 +1,7 @@
 package com.ironhack.finalProject.repositories.accounts;
 
-import com.ironhack.finalProject.model.accounts.Saving;
+import com.ironhack.finalProject.model.accounts.Savings;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SavingRepository extends JpaRepository<Saving, Long> {
+public interface SavingRepository extends JpaRepository<Savings, Long> {
 }
