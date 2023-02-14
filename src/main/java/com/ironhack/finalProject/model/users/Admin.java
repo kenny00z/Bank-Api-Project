@@ -3,11 +3,11 @@ package com.ironhack.finalProject.model.users;
 import jakarta.persistence.Entity;
 
 @Entity
-public class Admins extends User{
-    public Admins() {
+public class Admin extends User{
+    public Admin() {
     }
 
-    public Admins(String name, String authPass) {
+    public Admin(String name, String authPass) {
         super(name, authPass);
     }
 }

@@ -1,7 +1,8 @@
 package com.ironhack.finalProject.model.accounts;
 
 import com.ironhack.finalProject.enums.Status;
-import com.ironhack.finalProject.model.users.AccountHolders;
+import com.ironhack.finalProject.model.users.AccountHolder;
+import com.ironhack.finalProject.model.utils.Money;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,7 +21,7 @@ public class StudentChecking extends Account{
     public StudentChecking() {
     }
 
-    public StudentChecking(BigDecimal balance, int secretKey, AccountHolders primaryOwner, AccountHolders secondaryOwner, BigDecimal penaltyFee, LocalDate creationDate, Status status) {
+    public StudentChecking(Money balance, int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee, LocalDate creationDate, Status status) {
         super(balance, secretKey, primaryOwner, secondaryOwner, penaltyFee);
         this.creationDate = creationDate;
         this.status = status;

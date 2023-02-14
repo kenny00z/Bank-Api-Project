@@ -11,6 +11,8 @@ public abstract class User {
     private String name;
     private String authPass;
 
+
+
     public User() {
     }
 

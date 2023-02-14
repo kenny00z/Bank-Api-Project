@@ -1,6 +1,7 @@
 package com.ironhack.finalProject.model.accounts;
 
-import com.ironhack.finalProject.model.users.AccountHolders;
+import com.ironhack.finalProject.model.users.AccountHolder;
+import com.ironhack.finalProject.model.utils.Money;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -12,23 +13,25 @@ public abstract class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private BigDecimal balance;
+    @Embedded
+    private Money balance;
+
     private int secretKey;
 
     @ManyToOne
     @JoinColumn(name="primaryOwner_id")
-    private AccountHolders primaryOwner;
+    private AccountHolder primaryOwner;
 
     @ManyToOne
     @JoinColumn(name="secondaryOwner_id")
-    private AccountHolders secondaryOwner;
+    private AccountHolder secondaryOwner;
 
     private BigDecimal penaltyFee;
 
     public Account() {
     }
 
-    public Account(BigDecimal balance, int secretKey, AccountHolders primaryOwner, AccountHolders secondaryOwner, BigDecimal penaltyFee) {
+    public Account(Money balance, int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee) {
         this.balance = balance;
         this.secretKey = secretKey;
         this.primaryOwner = primaryOwner;
@@ -44,11 +47,12 @@ public abstract class Account {
         this.id = id;
     }
 
-    public BigDecimal getBalance() {
+
+    public Money getBalance() {
         return balance;
     }
 
-    public void setBalance(BigDecimal balance) {
+    public void setBalance(Money balance) {
         this.balance = balance;
     }
 
@@ -60,19 +64,19 @@ public abstract class Account {
         this.secretKey = secretKey;
     }
 
-    public AccountHolders getPrimaryOwner() {
+    public AccountHolder getPrimaryOwner() {
         return primaryOwner;
     }
 
-    public void setPrimaryOwner(AccountHolders primaryOwner) {
+    public void setPrimaryOwner(AccountHolder primaryOwner) {
         this.primaryOwner = primaryOwner;
     }
 
-    public AccountHolders getSecondaryOwner() {
+    public AccountHolder getSecondaryOwner() {
         return secondaryOwner;
     }
 
-    public void setSecondaryOwner(AccountHolders secondaryOwner) {
+    public void setSecondaryOwner(AccountHolder secondaryOwner) {
         this.secondaryOwner = secondaryOwner;
     }
 

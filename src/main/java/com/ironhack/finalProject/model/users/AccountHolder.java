@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-public class AccountHolders extends User{
+public class AccountHolder extends User{
     private LocalDate birthDate;
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "address")
@@ -15,10 +15,10 @@ public class AccountHolders extends User{
     @JoinColumn(name = "mailing_address_id")
     private Address mailingAddress;
 
-    public AccountHolders() {
+    public AccountHolder() {
     }
 
-    public AccountHolders(String name, String authPass, LocalDate birthDate, Address address, Address mailingAddress) {
+    public AccountHolder(String name, String authPass, LocalDate birthDate, Address address, Address mailingAddress) {
         super(name, authPass);
         this.birthDate = birthDate;
         this.address = address;
