@@ -22,10 +22,12 @@ public abstract class Account {
 
     @ManyToOne
     @JoinColumn(name="primaryOwner_id")
+    //@JsonIgnore
     private AccountHolder primaryOwner;
 
     @ManyToOne
     @JoinColumn(name="secondaryOwner_id")
+
     private AccountHolder secondaryOwner;
 
     private final BigDecimal penaltyFee = new BigDecimal(40);
@@ -91,10 +93,10 @@ public abstract class Account {
     }
     
     public Long getSecondaryOwnerId() {
-        return secondaryOwner.getId();
+        return ((secondaryOwner != null)?secondaryOwner.getId(): null);
     }
 
     public Long getPrimaryOwnerId() {
-        return primaryOwner.getId();
+        return ((primaryOwner != null)?primaryOwner.getId(): null);
     }
 }

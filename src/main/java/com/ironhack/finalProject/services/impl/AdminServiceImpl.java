@@ -44,7 +44,7 @@ public class AdminServiceImpl implements AdminServiceInterface {
         return checkingRepository.findAll();
     }
 
-    @Override
+
     public List<StudentChecking> getAllStudentAccounts() {
         return studentCheckingRepository.findAll();
     }
@@ -82,7 +82,10 @@ public class AdminServiceImpl implements AdminServiceInterface {
     public Account addChecking(AccountDTO accountDto) {
 
         AccountHolder primaryOwner = accountHoldersRepository.findById(accountDto.getPrimaryOwnerId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doesn't found"));
-        AccountHolder secondaryOwner = accountHoldersRepository.findById(accountDto.getSecondaryOwnerId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doesn't found"));
+        AccountHolder secondaryOwner = null;
+        if( accountDto.getSecondaryOwnerId() != null){
+         secondaryOwner = accountHoldersRepository.findById(accountDto.getSecondaryOwnerId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doesn't found"));
+        }
         LocalDate birthDate = primaryOwner.getBirthDate();
         LocalDate actualDate = LocalDate.now();
         Period period = Period.between(birthDate, actualDate);
@@ -94,6 +97,7 @@ public class AdminServiceImpl implements AdminServiceInterface {
         } else {
             newAccount = checkingRepository.save(new Checking(primaryOwner, secondaryOwner, accountDto.getSecretKey()));
         }
+
         return newAccount;
     }
 

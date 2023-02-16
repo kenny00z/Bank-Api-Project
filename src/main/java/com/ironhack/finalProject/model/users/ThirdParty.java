@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 public class ThirdParty {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 

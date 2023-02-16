@@ -26,6 +26,7 @@ public class StudentChecking extends Account{
     }
 
     public StudentChecking(AccountHolder primaryOwner, AccountHolder secondaryOwner, int secretKey) {
+        super(secretKey, primaryOwner, secondaryOwner);
     }
 
     public LocalDate getCreationDate() {
