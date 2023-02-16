@@ -36,6 +36,10 @@ public class Savings extends Account{
     }
 
 
+    public Savings(Long primaryOwnerId, Long secondaryOwnerId, Status status) {
+    }
+
+
     public BigDecimal getMinimumBalance() {
         return minimumBalance;
     }

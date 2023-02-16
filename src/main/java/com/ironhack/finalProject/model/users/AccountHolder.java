@@ -1,9 +1,13 @@
 package com.ironhack.finalProject.model.users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ironhack.finalProject.model.accounts.Account;
 import jakarta.persistence.*;
 ;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class AccountHolder extends User{
@@ -14,6 +18,17 @@ public class AccountHolder extends User{
     @ManyToOne
     @JoinColumn(name = "mailing_address_id")
     private Address mailingAddress;
+
+
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "primaryOwner")
+    private List<Account> primaryOwner = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondaryOwner")
+    private List<Account> secondaryOwner = new ArrayList<>();
+
+
 
     public AccountHolder() {
     }

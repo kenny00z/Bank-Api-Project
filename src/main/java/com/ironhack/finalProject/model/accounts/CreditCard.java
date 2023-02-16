@@ -1,7 +1,6 @@
 package com.ironhack.finalProject.model.accounts;
 
 import com.ironhack.finalProject.model.users.AccountHolder;
-import com.ironhack.finalProject.model.utils.Money;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -10,7 +9,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Entity
-public class CreditCar extends Account {
+public class CreditCard extends Account {
     @DecimalMin(value = "100", inclusive = true)
     @DecimalMax(value = "1000", inclusive = true)
     private BigDecimal creditLimit;
@@ -20,14 +19,18 @@ public class CreditCar extends Account {
     private BigDecimal interestRate;
 
 
-    public CreditCar() {
+    public CreditCard() {
     }
 
-    public CreditCar( int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
+    public CreditCard(int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
         super(secretKey, primaryOwner, secondaryOwner);
         this.creditLimit = new BigDecimal(100);
         this.interestRate = new BigDecimal(0.2).setScale(4, RoundingMode.HALF_EVEN);
     }
+
+    public CreditCard(BigDecimal creditLimit, BigDecimal interestRate, Long primaryOwnerId, Long secondaryOwnerId) {
+    }
+
 
     public BigDecimal getCreditLimit() {
         return creditLimit;

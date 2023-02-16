@@ -1,5 +1,6 @@
 package com.ironhack.finalProject.model.accounts;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.finalProject.model.users.AccountHolder;
 import com.ironhack.finalProject.model.utils.Money;
 import jakarta.persistence.*;
@@ -16,6 +17,7 @@ public abstract class Account {
     @Embedded
     private Money balance;
 
+    @JsonIgnore
     private int secretKey;
 
     @ManyToOne

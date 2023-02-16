@@ -11,10 +11,15 @@ public class ThirdParty {
 
     private String hashKey;
 
+    private String name;
 
-    public ThirdParty( String hashKey) {
 
+    public ThirdParty() {
+    }
+
+    public ThirdParty(String hashKey, String name) {
         this.hashKey = hashKey;
+        this.name = name;
     }
 
     public Long getId() {
@@ -25,9 +30,21 @@ public class ThirdParty {
         this.id = id;
     }
 
-    public ThirdParty() {
+    public String getHashKey() {
+        return hashKey;
     }
 
+    public void setHashKey(String hashKey) {
+        this.hashKey = hashKey;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
 
 }

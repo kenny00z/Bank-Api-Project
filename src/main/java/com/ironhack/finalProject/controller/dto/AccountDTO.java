@@ -12,6 +12,10 @@ public class AccountDTO {
     private BigDecimal creditLimit;
     private BigDecimal interestRate;
 
+    private int secretKey;
+
+
+
 
     public AccountDTO(Long primaryOwnerId, Long secondaryOwnerId, BigDecimal minimumBalance, BigDecimal monthlyMaintenanceFee, BigDecimal creditLimit, BigDecimal interestRate, String secretKey) {
         this.primaryOwnerId = primaryOwnerId;
@@ -96,5 +100,9 @@ public class AccountDTO {
 
     public void setInterestRate(BigDecimal interestRate) {
         this.interestRate = interestRate;
+    }
+
+    public int getSecretKey() {
+        return secretKey;
     }
 }
