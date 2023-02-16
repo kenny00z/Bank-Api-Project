@@ -28,6 +28,7 @@ public class Checking extends Account{
     }
 
     public Checking(AccountHolder primaryOwner, AccountHolder secondaryOwner, int secretKey) {
+        super(secretKey, primaryOwner, secondaryOwner);
     }
 
 

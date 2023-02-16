@@ -14,7 +14,7 @@ import java.util.Optional;
 
 
 @RestController
-public class AccountControllerImpl implements AdminServiceInterface {
+public class AdminControllerImpl implements AdminServiceInterface {
 
     @Autowired
     AdminServiceImpl adminService;
@@ -26,7 +26,7 @@ public class AccountControllerImpl implements AdminServiceInterface {
         return adminService.getAllCheckingAccounts();
     }
 
-    @GetMapping("accounts/student")
+    @GetMapping("/accounts/student")
     @ResponseStatus(HttpStatus.OK)
     public List<StudentChecking> getAllStudentAccounts(){
         return adminService.getAllStudentAccounts();
@@ -50,7 +50,7 @@ public class AccountControllerImpl implements AdminServiceInterface {
     public Optional<Checking> getAllCheckingAccountsById(@PathVariable Long id) {
         return adminService.getAllCheckingAccountsById(id);
     }
-    @GetMapping("accounts/student/{id}")
+    @GetMapping("/accounts/student/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Optional<StudentChecking> getAllStudentAccountsById(@PathVariable Long id) {
         return adminService.getAllStudentAccountsById(id);
@@ -66,25 +66,25 @@ public class AccountControllerImpl implements AdminServiceInterface {
     public Optional<CreditCard> getAllCreditCardAccountsById(@PathVariable Long id) {
         return adminService.getAllCreditCardAccountsById(id);
     }
-    @PostMapping("admin/third-party")
+    @PostMapping("/admin/third-party")
     @ResponseStatus(HttpStatus.CREATED)
     public ThirdParty addThirdParty(@RequestBody ThirdParty thirdParty) {
         return adminService.addThirdParty(thirdParty);
     }
 
-    @PostMapping("admin/savings")
+    @PostMapping("/admin/savings")
     @ResponseStatus(HttpStatus.CREATED)
     public Savings addSavings(@RequestBody Savings savings) {
         return adminService.addSavings(savings);
     }
 
-    @PostMapping("admin/checking")
+    @PostMapping("/admin/checking")
     @ResponseStatus(HttpStatus.CREATED)
     public Account addChecking(@RequestBody AccountDTO accountDto) {
         return adminService.addChecking(accountDto);
     }
 
-    @PostMapping("admin/credit-card")
+    @PostMapping("/admin/credit-card")
     @ResponseStatus(HttpStatus.CREATED)
     public CreditCard addCreditCard(@RequestBody CreditCard creditCard) {
         return adminService.addCreditCard(creditCard);

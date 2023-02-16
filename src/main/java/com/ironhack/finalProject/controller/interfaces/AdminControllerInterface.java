@@ -3,12 +3,11 @@ package com.ironhack.finalProject.controller.interfaces;
 import com.ironhack.finalProject.controller.dto.AccountDTO;
 import com.ironhack.finalProject.model.accounts.*;
 import com.ironhack.finalProject.model.users.ThirdParty;
-import org.hibernate.annotations.Check;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface AccountControllerInterface {
+public interface AdminControllerInterface {
     List<Checking> getAllCheckingAccounts();
 
     List<StudentChecking> getAllStudentsAccounts();

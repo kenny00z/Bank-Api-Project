@@ -45,7 +45,6 @@ public abstract class Account {
 
 
 
-
     public Long getId() {
         return id;
     }
