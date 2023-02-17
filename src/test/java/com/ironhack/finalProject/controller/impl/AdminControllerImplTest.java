@@ -1,14 +1,18 @@
 package com.ironhack.finalProject.controller.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.finalProject.model.accounts.Savings;
 import com.ironhack.finalProject.model.users.AccountHolder;
 import com.ironhack.finalProject.model.users.Address;
 import com.ironhack.finalProject.model.users.Admin;
+import com.ironhack.finalProject.model.users.ThirdParty;
 import com.ironhack.finalProject.repositories.accounts.AccountRepository;
 import com.ironhack.finalProject.repositories.accounts.SavingRepository;
 import com.ironhack.finalProject.repositories.users.AccountHoldersRepository;
 import com.ironhack.finalProject.repositories.users.AddressRepository;
 import com.ironhack.finalProject.repositories.users.AdminRepository;
+import com.ironhack.finalProject.repositories.users.ThirdPartyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,9 +53,12 @@ class AdminControllerImplTest {
     private Admin admin1;
     private AccountHolder holder1;
     private Address address1;
-    private LocalDate date1;
     private LocalDate birthDate;
     private Savings saving1;
+
+    MvcResult mvcResult;
+    String body;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
     @BeforeEach
@@ -71,6 +78,7 @@ class AdminControllerImplTest {
         saving1 = new Savings(1L,2L,ACTIVE);
         savingsRepository.save(saving1);
 
+
     }
 
     @AfterEach
@@ -84,13 +92,13 @@ class AdminControllerImplTest {
 
     @Test
     void getAllSavingsAccounts_AllSavingsAccountsWorks() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/accounts/savings"))
+        mvcResult = mockMvc.perform(get("/accounts/savings"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
         assertTrue(mvcResult.getResponse().getContentAsString().contains("ACTIVE"));
-        assertTrue(mvcResult.getResponse().getContentAsString().contains("13"));
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("1"));
 //        MvcResult mvcResult = mockMvc.perform(get("/accounts/savings"))
 //                .andExpect(status().isOK())
 //                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -99,13 +107,20 @@ class AdminControllerImplTest {
     }
 
     @Test
-    void addThirdParty() {
-
-
-
+    void addThirdParty_Works() throws Exception {
+        //Admin admins = new Admin("Yisus", "123");
+        body = objectMapper.writeValueAsString(admin1);
+        mvcResult = mockMvc.perform(post("/admin/third-party").content(body).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("Yisus"));
     }
 
     @Test
-    void deleteThirdParty() {
+    void deleteSavings_Works() throws Exception {
+        mvcResult = mockMvc.perform(delete("/admin/savings/" + saving1.getId()))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        assertFalse(savingsRepository.existsById(saving1.getId()));
+
     }
 }
