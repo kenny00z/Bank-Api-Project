@@ -21,12 +21,12 @@ public class AccountHolder extends User{
 
 
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "primaryOwner")
-    private List<Account> primaryOwner = new ArrayList<>();
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondaryOwner")
-    private List<Account> secondaryOwner = new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "primaryOwner")
+//    private List<Account> primaryOwner = new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondaryOwner")
+//    private List<Account> secondaryOwner = new ArrayList<>();
 
 
 

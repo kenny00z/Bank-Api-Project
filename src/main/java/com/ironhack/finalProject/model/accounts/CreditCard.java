@@ -7,6 +7,7 @@ import jakarta.validation.constraints.DecimalMin;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 
 @Entity
 public class CreditCard extends Account {
@@ -19,13 +20,17 @@ public class CreditCard extends Account {
     private BigDecimal interestRate;
 
 
+    private LocalDate lastInterestDay;
+
+
     public CreditCard() {
     }
 
-    public CreditCard(int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
+    public CreditCard(int secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, LocalDate lastInterestDay) {
         super(secretKey, primaryOwner, secondaryOwner);
         this.creditLimit = new BigDecimal(100);
         this.interestRate = new BigDecimal(0.2).setScale(4, RoundingMode.HALF_EVEN);
+        this.lastInterestDay = lastInterestDay;
     }
 
     public CreditCard(BigDecimal creditLimit, BigDecimal interestRate, Long primaryOwnerId, Long secondaryOwnerId) {
@@ -38,5 +43,13 @@ public class CreditCard extends Account {
 
     public BigDecimal getInterestRate() {
         return interestRate;
+    }
+
+    public LocalDate getLastInterestDay() {
+        return lastInterestDay;
+    }
+
+    public void setLastInterestDay(LocalDate lastInterestDay) {
+        this.lastInterestDay = lastInterestDay;
     }
 }

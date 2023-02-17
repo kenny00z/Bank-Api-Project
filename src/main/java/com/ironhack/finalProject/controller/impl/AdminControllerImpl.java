@@ -1,6 +1,8 @@
 package com.ironhack.finalProject.controller.impl;
 
 import com.ironhack.finalProject.controller.dto.AccountDTO;
+import com.ironhack.finalProject.controller.dto.BalanceDTO;
+import com.ironhack.finalProject.controller.dto.TransferDTO;
 import com.ironhack.finalProject.model.accounts.*;
 import com.ironhack.finalProject.model.users.ThirdParty;
 import com.ironhack.finalProject.services.impl.AdminServiceImpl;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,5 +123,16 @@ public class AdminControllerImpl implements AdminServiceInterface {
         adminService.deleteSavings(id);
     }
 
+    @GetMapping("/user/check-balance")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public BigDecimal checkingBalance(@RequestBody BalanceDTO balanceDto) {
+        return adminService.checkingBalance(balanceDto);
+    }
+
+    @PatchMapping("/user/transfer")
+    @ResponseStatus(HttpStatus.OK)
+    public BigDecimal transfer(@RequestBody TransferDTO transferDTO) {
+        return adminService.transfer(transferDTO);
+    }
 
 }

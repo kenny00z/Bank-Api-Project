@@ -1,13 +1,13 @@
 package com.ironhack.finalProject.services.impl;
 
 import com.ironhack.finalProject.controller.dto.AccountDTO;
+import com.ironhack.finalProject.controller.dto.BalanceDTO;
+import com.ironhack.finalProject.controller.dto.TransferDTO;
 import com.ironhack.finalProject.model.accounts.*;
 import com.ironhack.finalProject.model.users.AccountHolder;
 import com.ironhack.finalProject.model.users.ThirdParty;
-import com.ironhack.finalProject.repositories.accounts.CheckingRepository;
-import com.ironhack.finalProject.repositories.accounts.CreditCardRepository;
-import com.ironhack.finalProject.repositories.accounts.SavingRepository;
-import com.ironhack.finalProject.repositories.accounts.StudentCheckingRepository;
+import com.ironhack.finalProject.model.utils.Money;
+import com.ironhack.finalProject.repositories.accounts.*;
 import com.ironhack.finalProject.repositories.users.AccountHoldersRepository;
 import com.ironhack.finalProject.repositories.users.ThirdPartyRepository;
 import com.ironhack.finalProject.services.interfaces.AdminServiceInterface;
@@ -16,7 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +38,9 @@ public class AdminServiceImpl implements AdminServiceInterface {
     CreditCardRepository creditCardRepository;
     @Autowired
     ThirdPartyRepository thirdPartyRepository;
+    @Autowired
+    AccountRepository accountRepository;
+
 
 
 
@@ -160,6 +165,117 @@ public class AdminServiceImpl implements AdminServiceInterface {
     }
 
 
+    public Money interestRateCreditCard(Long id) {
+        CreditCard creditCard = creditCardRepository.findById(id).get();
+        Integer transaction = Period.between(creditCard.getLastInterestDay(), LocalDate.now()).getMonths();
+        if (transaction >= 1) {
+            BigDecimal firstMonth = new BigDecimal(1);
+            BigDecimal lastMonth = new BigDecimal(12);
+            for (int i = 0; i < transaction; i++) {
+                Money interestRate = new Money(creditCard.getBalance().getAmount().multiply(firstMonth.add(creditCard.getInterestRate().divide(lastMonth))));
+                creditCard.setBalance(interestRate);
+            }
+            creditCard.setLastInterestDay(LocalDate.now());
+            creditCardRepository.save(creditCard);
+        }
+        return creditCard.getBalance();
+    }
+
+
+    public Money interestRateSaving(Long id) {
+        Savings saving = savingRepository.findById(id).get();
+
+        Integer transaction = Period.between(saving.getLastInterestDay(), LocalDate.now()).getYears();
+        if (transaction >= 1) {
+            BigDecimal year = new BigDecimal(1);
+            for (int i = 0; i < transaction; i++) {
+                Money interestRate = new Money(saving.getBalance().getAmount().multiply(year.add(saving.getInterestRate())));
+                saving.setBalance(interestRate);
+                savingRepository.save(saving);
+            }
+        }
+        return saving.getBalance();
+    }
+
+
+
+    public BigDecimal checkingBalance(BalanceDTO balanceDTO) {
+        AccountHolder accountHolders = accountHoldersRepository.findById(balanceDTO.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not an existing user"));
+        Account account = accountRepository.findById(balanceDTO.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not an existing account"));
+
+        if (account.getPrimaryOwner() == accountHolders || account.getSecondaryOwner() == accountHolders) {
+            if (savingRepository.existsById(balanceDTO.getId())) {
+                return interestRateSaving(balanceDTO.getId()).getAmount();
+            }
+            if (creditCardRepository.existsById(balanceDTO.getId())) {
+                interestRateCreditCard(balanceDTO.getId()).getAmount();
+            }
+            return account.getBalance().getAmount();
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Can't access to this account");
+        }
+    }
+
+
+    public BigDecimal transfer(TransferDTO transferDTO) {
+        Account senderAccount = accountRepository.findById(transferDTO.getIssuingAccountId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not an existing account"));
+        Account receiverAccount = accountRepository.findById(transferDTO.getReceivingAccountId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not an existing account"));
+        Money sent = new Money(senderAccount.getBalance().decreaseAmount(transferDTO.getAmount()));
+        Money received = new Money(receiverAccount.getBalance().increaseAmount(transferDTO.getAmount()));
+        BigDecimal init = new BigDecimal(0);
+
+        if (senderAccount.getBalance().getAmount().subtract(transferDTO.getAmount()).compareTo(init) < 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Not enough money to transfer");
+        }
+
+        if (checkingRepository.existsById(transferDTO.getIssuingAccountId())) {
+            Checking checking = checkingRepository.findById(transferDTO.getIssuingAccountId()).get();
+            return this.transferChecking(checking, transferDTO.getAmount(), receiverAccount, sent, received);
+        } else if (savingRepository.existsById(transferDTO.getIssuingAccountId())) {
+            Savings savinSenderAccount = savingRepository.findById(transferDTO.getIssuingAccountId()).get();
+            return this.transferSavings(savinSenderAccount, transferDTO.getAmount(), receiverAccount, sent, received);
+        } else {
+            senderAccount.setBalance(sent);
+            receiverAccount.setBalance(received);
+            TransferDTO creditCardTransfer = new TransferDTO("Credit card", senderAccount.getPrimaryOwner().getId(),
+                    receiverAccount.getPrimaryOwner().getId(), BigDecimal.valueOf(100), LocalDateTime.now(), senderAccount);
+            accountRepository.save(senderAccount);
+            accountRepository.save(receiverAccount);
+        //    transferDTORepository.save(creditCardTransfer);
+            return senderAccount.getBalance().getAmount();
+        }
+    }
+
+    public BigDecimal transferChecking(Checking checking, BigDecimal transfer, Account accountReceiver, Money sent, Money received) {
+        if (checking.getBalance().getAmount().compareTo(checking.getMinimumBalance().getAmount()) < 0) {
+            sent.decreaseAmount(checking.getPenaltyFee().getAmount());
+        }
+
+        checking.setBalance(sent);
+        accountReceiver.setBalance(received);
+        checkingRepository.save(checking);
+        TransferDTO checkingTransaction = new TransferDTO("Checking", checking.getPrimaryOwner().getId(),
+                accountReceiver.getPrimaryOwner().getId(), BigDecimal.valueOf(20), LocalDateTime.now(), checking);
+        accountRepository.save(accountReceiver);
+        //transferDTORepository.save(checkingTransaction);
+        return checking.getBalance().getAmount();
+    }
+
+
+    public BigDecimal transferSavings(Savings savings, BigDecimal transfer, Account accountReceiver, Money sent, Money received) {
+        if (savings.getBalance().getAmount().compareTo(savings.getMinimumBalance().getAmount()) < 0) {
+            sent.decreaseAmount(savings.getPenaltyFee().getAmount());
+        }
+
+        savings.setBalance(sent);
+        accountReceiver.setBalance(received);
+        savingRepository.save(savings);
+        TransferDTO savingTransaction = new TransferDTO("Saving", savings.getPrimaryOwner().getId(),
+                accountReceiver.getPrimaryOwner().getId(), BigDecimal.valueOf(50), LocalDateTime.now(), savings);
+        accountRepository.save(accountReceiver);
+        //transferDTORepository.save(savingTransaction);
+        return savings.getBalance().getAmount();
+    }
 
 
 

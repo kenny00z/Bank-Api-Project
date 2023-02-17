@@ -1,9 +1,12 @@
 package com.ironhack.finalProject.controller.interfaces;
 
 import com.ironhack.finalProject.controller.dto.AccountDTO;
+import com.ironhack.finalProject.controller.dto.BalanceDTO;
+import com.ironhack.finalProject.controller.dto.TransferDTO;
 import com.ironhack.finalProject.model.accounts.*;
 import com.ironhack.finalProject.model.users.ThirdParty;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,5 +39,9 @@ public interface AdminControllerInterface {
     void deleteSavings(Long id);
 
     void deleteThirdParty(Long id);
+
+    BigDecimal checkingBalance(BalanceDTO balanceDTO);
+
+    BigDecimal transfer(TransferDTO transferDTO);
 
 }

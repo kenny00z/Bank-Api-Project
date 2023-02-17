@@ -30,7 +30,12 @@ public abstract class Account {
 
     private AccountHolder secondaryOwner;
 
-    private final BigDecimal penaltyFee = new BigDecimal(40);
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount")),
+            @AttributeOverride(name = "currency", column = @Column(name = "penalty_fee_currency"))
+    })
+    private final Money penaltyFee = new Money (BigDecimal.valueOf(40));
 
     public Account() {
     }
@@ -87,10 +92,10 @@ public abstract class Account {
         this.secondaryOwner = secondaryOwner;
     }
 
-    public BigDecimal getPenaltyFee() {
+    public Money getPenaltyFee() {
         return penaltyFee;
     }
-    
+
     public Long getSecondaryOwnerId() {
         return ((secondaryOwner != null)?secondaryOwner.getId(): null);
     }

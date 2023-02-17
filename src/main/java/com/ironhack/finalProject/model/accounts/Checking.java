@@ -3,6 +3,7 @@ package com.ironhack.finalProject.model.accounts;
 import com.ironhack.finalProject.enums.Status;
 import com.ironhack.finalProject.model.users.AccountHolder;
 import com.ironhack.finalProject.model.utils.Money;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,7 +12,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 @Entity
 public class Checking extends Account{
-    private final BigDecimal minimumBalance = new BigDecimal(250);
+    @Embedded
+    private final Money minimumBalance = new Money (BigDecimal.valueOf(250));
     private BigDecimal monthlyMaintenanceFee;
 
     private final LocalDate creationDate = LocalDate.now();
@@ -31,8 +33,7 @@ public class Checking extends Account{
         super(secretKey, primaryOwner, secondaryOwner);
     }
 
-
-    public BigDecimal getMinimumBalance() {
+    public Money getMinimumBalance() {
         return minimumBalance;
     }
 

@@ -1,4 +1,5 @@
 package com.ironhack.finalProject.model.utils;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.math.RoundingMode;
@@ -12,7 +13,9 @@ public class Money {
     private static final Currency USD = Currency.getInstance("USD");
     private static final RoundingMode DEFAULT_ROUNDING = RoundingMode.HALF_EVEN;
 
+
     private final Currency currency;
+
     private BigDecimal amount;
 
     public Money() {
