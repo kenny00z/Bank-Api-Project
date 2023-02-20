@@ -3,6 +3,7 @@ package com.ironhack.finalProject.services.impl;
 import com.ironhack.finalProject.controller.dto.AccountDTO;
 import com.ironhack.finalProject.controller.dto.BalanceDTO;
 import com.ironhack.finalProject.controller.dto.TransferDTO;
+import com.ironhack.finalProject.model.utils.Transfer;
 import com.ironhack.finalProject.model.accounts.*;
 import com.ironhack.finalProject.model.users.AccountHolder;
 import com.ironhack.finalProject.model.users.ThirdParty;
@@ -10,6 +11,7 @@ import com.ironhack.finalProject.model.utils.Money;
 import com.ironhack.finalProject.repositories.accounts.*;
 import com.ironhack.finalProject.repositories.users.AccountHoldersRepository;
 import com.ironhack.finalProject.repositories.users.ThirdPartyRepository;
+import com.ironhack.finalProject.repositories.utils.TransferRepository;
 import com.ironhack.finalProject.services.interfaces.AdminServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +41,8 @@ public class AdminServiceImpl implements AdminServiceInterface {
     ThirdPartyRepository thirdPartyRepository;
     @Autowired
     AccountRepository accountRepository;
+    @Autowired
+    TransferRepository transferRepository;
 
 
 
@@ -167,11 +170,11 @@ public class AdminServiceImpl implements AdminServiceInterface {
 
     public Money interestRateCreditCard(Long id) {
         CreditCard creditCard = creditCardRepository.findById(id).get();
-        Integer transaction = Period.between(creditCard.getLastInterestDay(), LocalDate.now()).getMonths();
-        if (transaction >= 1) {
+        Integer transfer = Period.between(creditCard.getLastInterestDay(), LocalDate.now()).getMonths();
+        if (transfer >= 1) {
             BigDecimal firstMonth = new BigDecimal(1);
             BigDecimal lastMonth = new BigDecimal(12);
-            for (int i = 0; i < transaction; i++) {
+            for (int i = 0; i < transfer; i++) {
                 Money interestRate = new Money(creditCard.getBalance().getAmount().multiply(firstMonth.add(creditCard.getInterestRate().divide(lastMonth))));
                 creditCard.setBalance(interestRate);
             }
@@ -185,10 +188,10 @@ public class AdminServiceImpl implements AdminServiceInterface {
     public Money interestRateSaving(Long id) {
         Savings saving = savingRepository.findById(id).get();
 
-        Integer transaction = Period.between(saving.getLastInterestDay(), LocalDate.now()).getYears();
-        if (transaction >= 1) {
+        Integer transfer = Period.between(saving.getLastInterestDay(), LocalDate.now()).getYears();
+        if (transfer >= 1) {
             BigDecimal year = new BigDecimal(1);
-            for (int i = 0; i < transaction; i++) {
+            for (int i = 0; i < transfer; i++) {
                 Money interestRate = new Money(saving.getBalance().getAmount().multiply(year.add(saving.getInterestRate())));
                 saving.setBalance(interestRate);
                 savingRepository.save(saving);
@@ -217,36 +220,38 @@ public class AdminServiceImpl implements AdminServiceInterface {
     }
 
 
-    public BigDecimal transfer(TransferDTO transferDTO) {
-        Account senderAccount = accountRepository.findById(transferDTO.getIssuingAccountId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not an existing account"));
-        Account receiverAccount = accountRepository.findById(transferDTO.getReceivingAccountId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not an existing account"));
+    public BigDecimal transfer(Transfer transferDTO) {
+        Account senderAccount = accountRepository.findById(transferDTO.getIssuingAccountId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This account doesn't exist"));
+        Account receiverAccount = accountRepository.findById(transferDTO.getReceivingAccountId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This account doesn't exist"));
         Money sent = new Money(senderAccount.getBalance().decreaseAmount(transferDTO.getAmount()));
         Money received = new Money(receiverAccount.getBalance().increaseAmount(transferDTO.getAmount()));
         BigDecimal init = new BigDecimal(0);
 
         if (senderAccount.getBalance().getAmount().subtract(transferDTO.getAmount()).compareTo(init) < 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Not enough money to transfer");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "You don't have money, go to work");
         }
 
         if (checkingRepository.existsById(transferDTO.getIssuingAccountId())) {
-            Checking checking = checkingRepository.findById(transferDTO.getIssuingAccountId()).get();
-            return this.transferChecking(checking, transferDTO.getAmount(), receiverAccount, sent, received);
-        } else if (savingRepository.existsById(transferDTO.getIssuingAccountId())) {
-            Savings savinSenderAccount = savingRepository.findById(transferDTO.getIssuingAccountId()).get();
+            Checking checkingSenderAccount = checkingRepository.findById(transferDTO.getIssuingAccountId()).get();
+            return this.transferChecking(checkingSenderAccount, transferDTO.getAmount(), receiverAccount, sent, received);
+        } else if (savingRepository.existsById(transferDTO.getReceivingAccountId())) {
+            Savings savinSenderAccount = savingRepository.findById(transferDTO.getReceivingAccountId()).get();
             return this.transferSavings(savinSenderAccount, transferDTO.getAmount(), receiverAccount, sent, received);
         } else {
             senderAccount.setBalance(sent);
             receiverAccount.setBalance(received);
-            TransferDTO creditCardTransfer = new TransferDTO("Credit card", senderAccount.getPrimaryOwner().getId(),
-                    receiverAccount.getPrimaryOwner().getId(), BigDecimal.valueOf(100), LocalDateTime.now(), senderAccount);
+            Transfer creditCardTransfer = new Transfer(senderAccount.getPrimaryOwner().getId(),
+                    receiverAccount.getPrimaryOwner().getId(), BigDecimal.valueOf(100), LocalDate.now(), senderAccount);
             accountRepository.save(senderAccount);
             accountRepository.save(receiverAccount);
-        //    transferDTORepository.save(creditCardTransfer);
+            transferRepository.save(creditCardTransfer);
             return senderAccount.getBalance().getAmount();
         }
     }
 
-    public BigDecimal transferChecking(Checking checking, BigDecimal transfer, Account accountReceiver, Money sent, Money received) {
+
+
+    public BigDecimal transferChecking(Checking checking,BigDecimal transfer, Account accountReceiver, Money sent, Money received) {
         if (checking.getBalance().getAmount().compareTo(checking.getMinimumBalance().getAmount()) < 0) {
             sent.decreaseAmount(checking.getPenaltyFee().getAmount());
         }
@@ -254,10 +259,10 @@ public class AdminServiceImpl implements AdminServiceInterface {
         checking.setBalance(sent);
         accountReceiver.setBalance(received);
         checkingRepository.save(checking);
-        TransferDTO checkingTransaction = new TransferDTO("Checking", checking.getPrimaryOwner().getId(),
-                accountReceiver.getPrimaryOwner().getId(), BigDecimal.valueOf(20), LocalDateTime.now(), checking);
+        Transfer checkingTransfer = new Transfer(checking.getPrimaryOwner().getId(),
+                accountReceiver.getPrimaryOwner().getId(), BigDecimal.valueOf(20), LocalDate.now(), checking);
         accountRepository.save(accountReceiver);
-        //transferDTORepository.save(checkingTransaction);
+        transferRepository.save(checkingTransfer);
         return checking.getBalance().getAmount();
     }
 
@@ -266,19 +271,15 @@ public class AdminServiceImpl implements AdminServiceInterface {
         if (savings.getBalance().getAmount().compareTo(savings.getMinimumBalance().getAmount()) < 0) {
             sent.decreaseAmount(savings.getPenaltyFee().getAmount());
         }
-
         savings.setBalance(sent);
         accountReceiver.setBalance(received);
         savingRepository.save(savings);
-        TransferDTO savingTransaction = new TransferDTO("Saving", savings.getPrimaryOwner().getId(),
-                accountReceiver.getPrimaryOwner().getId(), BigDecimal.valueOf(50), LocalDateTime.now(), savings);
+        Transfer savingTransfer = new Transfer(savings.getPrimaryOwner().getId(),
+                accountReceiver.getPrimaryOwner().getId(), BigDecimal.valueOf(50), LocalDate.now(), savings);
         accountRepository.save(accountReceiver);
-        //transferDTORepository.save(savingTransaction);
+        transferRepository.save(savingTransfer);
         return savings.getBalance().getAmount();
     }
-
-
-
 }
 
 

@@ -2,7 +2,7 @@ package com.ironhack.finalProject.controller.interfaces;
 
 import com.ironhack.finalProject.controller.dto.AccountDTO;
 import com.ironhack.finalProject.controller.dto.BalanceDTO;
-import com.ironhack.finalProject.controller.dto.TransferDTO;
+import com.ironhack.finalProject.model.utils.Transfer;
 import com.ironhack.finalProject.model.accounts.*;
 import com.ironhack.finalProject.model.users.ThirdParty;
 
@@ -42,6 +42,6 @@ public interface AdminControllerInterface {
 
     BigDecimal checkingBalance(BalanceDTO balanceDTO);
 
-    BigDecimal transfer(TransferDTO transferDTO);
+    BigDecimal transfer(Transfer transferDTO);
 
 }

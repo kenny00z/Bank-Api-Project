@@ -1,9 +1,7 @@
 package com.ironhack.finalProject.controller.dto;
 
-import com.ironhack.finalProject.model.accounts.Account;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
 
 public class TransferDTO {
 
@@ -11,7 +9,6 @@ public class TransferDTO {
     private BigDecimal amount;
     private Long issuingAccountId;
     private Long receivingAccountId;
-
 
     public TransferDTO() {
     }
@@ -22,7 +19,14 @@ public class TransferDTO {
         this.receivingAccountId = receivingAccountId;
     }
 
-    public TransferDTO(String creditCard, Long id, Long id1, BigDecimal valueOf, LocalDateTime now, Account senderAccount) {
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public BigDecimal getAmount() {

@@ -2,7 +2,7 @@ package com.ironhack.finalProject.controller.impl;
 
 import com.ironhack.finalProject.controller.dto.AccountDTO;
 import com.ironhack.finalProject.controller.dto.BalanceDTO;
-import com.ironhack.finalProject.controller.dto.TransferDTO;
+import com.ironhack.finalProject.model.utils.Transfer;
 import com.ironhack.finalProject.model.accounts.*;
 import com.ironhack.finalProject.model.users.ThirdParty;
 import com.ironhack.finalProject.services.impl.AdminServiceImpl;
@@ -131,7 +131,7 @@ public class AdminControllerImpl implements AdminServiceInterface {
 
     @PatchMapping("/user/transfer")
     @ResponseStatus(HttpStatus.OK)
-    public BigDecimal transfer(@RequestBody TransferDTO transferDTO) {
+    public BigDecimal transfer(@RequestBody Transfer transferDTO) {
         return adminService.transfer(transferDTO);
     }
 
